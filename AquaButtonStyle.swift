@@ -97,8 +97,6 @@ struct AquaButtonStyle: ButtonStyle {
     }
 }
 
-
-
 extension View {
     func aquaButtonStyle(aquaColor: Color, colorShadow: Bool = true) -> some View {
         self.buttonStyle(AquaButtonStyle(aquaColor: aquaColor, colorShadow: colorShadow))
