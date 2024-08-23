@@ -70,7 +70,7 @@ struct AquaButtonStyle: ButtonStyle {
                                                 Capsule() // Full-sized capsule for the base of the highlight
                                                 
                                                 Capsule()
-                                                    .offset(y: edgePadding * 1.6) // Slightly offset capsule to create a cut-out effect
+                                                    .offset(y: edgePadding * 1.7) // Slightly offset capsule to create a cut-out effect
                                                     .blendMode(.destinationOut) // Removes the overlapping area, creating a highlight
                                             }
                                             .compositingGroup() // Creates a shape from the non-overlapping areas of the two capsules.
@@ -85,7 +85,7 @@ struct AquaButtonStyle: ButtonStyle {
                                 }
                             }
                             .blur(radius: edgePadding / 4)
-                            .padding(edgePadding)
+                            ///.padding(edgePadding)
                         }
                         .padding(edgePadding) // Additional padding for inner ZStack
                     }
