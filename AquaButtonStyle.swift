@@ -14,16 +14,16 @@ struct AquaButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundStyle(Color.black.opacity(0.7))
+            .foregroundStyle(Color.black)
             .padding()
-            .background(
+            .overlay(
                 GeometryReader { geo in
                     let edgePadding = geo.size.height / 30 // Edge padding based on the button's height
                     
                     ZStack {
                         // Base capsule shape with optional color shadow
                         Capsule()
-                            .foregroundStyle(aquaColor.opacity(0.95)) // Main button color
+                            .foregroundStyle(aquaColor.opacity(0.9)) // Main button color
                             .blendMode(.darken)
                             .shadow(radius: edgePadding / 2) // Subtle shadow for depth
                             .shadow(
@@ -32,24 +32,29 @@ struct AquaButtonStyle: ButtonStyle {
                                 y: colorShadow ? geo.size.height / 10 : 0
                             )
                         
+                        configuration.label
+                            .foregroundStyle(Color.black.opacity(0.7))
+                            .shadow(radius: edgePadding, y: edgePadding * 2)
+                        
                         ZStack {
                             // Light gradient overlay on the capsule
                             Capsule()
                                 .foregroundStyle(
                                     LinearGradient(
-                                        gradient: Gradient(colors: [.white.opacity(0), .white.opacity(0.1), .white.opacity(0.3), .white.opacity(0.75)]),
+                                        gradient: Gradient(colors: [.white.opacity(0), .white.opacity(0.1), .white.opacity(0.3), .white.opacity(1)]),
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
                                 )
                                 .blur(radius: edgePadding / 2) // Soften the gradient edges
+                                .blendMode(.overlay)
                             
                             ZStack {
                                 // Reflection effect on the capsule
                                 Capsule()
                                     .foregroundStyle(
                                         LinearGradient(
-                                            gradient: Gradient(colors: [.white.opacity(0.95), .white.opacity(0.5), .white.opacity(0.25), .white.opacity(0), .white.opacity(0)]),
+                                            gradient: Gradient(colors: [.white.opacity(0.95), .white.opacity(0.2), .white.opacity(0)]),
                                             startPoint: .top,
                                             endPoint: .bottom
                                         )
@@ -70,7 +75,7 @@ struct AquaButtonStyle: ButtonStyle {
                                                 Capsule() // Full-sized capsule for the base of the highlight
                                                 
                                                 Capsule()
-                                                    .offset(y: edgePadding * 1.7) // Slightly offset capsule to create a cut-out effect
+                                                    .offset(y: edgePadding * 1.2) // Slightly offset capsule to create a cut-out effect
                                                     .blendMode(.destinationOut) // Removes the overlapping area, creating a highlight
                                             }
                                             .compositingGroup() // Creates a shape from the non-overlapping areas of the two capsules.
