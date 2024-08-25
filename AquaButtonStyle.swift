@@ -10,87 +10,142 @@ import SwiftUI
 struct AquaButtonStyle: ButtonStyle {
     var aquaColor: Color
     var colorShadow: Bool
+    var shape: ButtonShape
+    
     var highlight: Bool = true
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundStyle(Color.black)
-            .padding()
+            .padding() // Button padding
             .overlay(
                 GeometryReader { geo in
                     let edgePadding = geo.size.height / 30 // Edge padding based on the button's height
                     
                     ZStack {
-                        // Base capsule shape with optional color shadow
-                        Capsule()
-                            .foregroundStyle(aquaColor.opacity(0.9)) // Main button color
-                            .blendMode(.darken)
-                            .shadow(radius: edgePadding / 2) // Subtle shadow for depth
-                            .shadow(
-                                color: colorShadow ? aquaColor.opacity(0.35) : .clear, // Visible only if colorShadow is true
-                                radius: colorShadow ? geo.size.height / 20 : 0,
-                                y: colorShadow ? geo.size.height / 10 : 0
-                            )
+                        // Base shape with optional color shadow
+                        Group {
+                            switch shape {
+                            case .capsule:
+                                Capsule() // Shape: Capsule
+                            case .rectangle(let cornerRadius):
+                                RoundedRectangle(cornerRadius: cornerRadius) // Shape: RoundedRectangle with specified cornerRadius
+                            }
+                        }
+                        .foregroundStyle(aquaColor.opacity(0.9)) // Main button color
+                        .shadow(radius: edgePadding / 2) // Subtle shadow for depth
+                        .shadow(
+                            color: colorShadow ? aquaColor.opacity(0.35) : .clear, // Shadow color based on colorShadow flag
+                            radius: colorShadow ? geo.size.height / 20 : 0, // Shadow radius based on colorShadow flag
+                            y: colorShadow ? geo.size.height / 10 : 0 // Shadow y-offset based on colorShadow flag
+                        )
                         
                         configuration.label
-                            .foregroundStyle(Color.black.opacity(0.7))
-                            .shadow(radius: edgePadding, y: edgePadding * 2)
+                            .foregroundStyle(Color.black.opacity(0.7)) // Label color
+                            .shadow(radius: edgePadding, y: edgePadding * 2) // Shadow for the label
                         
                         ZStack {
-                            // Light gradient overlay on the capsule
-                            Capsule()
+                            // Gradient overlay for highlight effect
+                            Group {
+                                switch shape {
+                                case .capsule:
+                                    Capsule() // Shape: Capsule
+                                case .rectangle(let cornerRadius):
+                                    RoundedRectangle(cornerRadius: cornerRadius - edgePadding) // Shape: RoundedRectangle with adjusted cornerRadius
+                                }
+                            }
+                            .foregroundStyle(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [.white.opacity(0), .white.opacity(0.1), .white.opacity(0.3), .white.opacity(1)]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .blur(radius: edgePadding / 2) // Soften the gradient edges
+                            .blendMode(.overlay) // Blend mode for gradient overlay
+                            
+                            ZStack {
+                                // Reflection effect
+                                Group {
+                                    switch shape {
+                                    case .capsule:
+                                        Capsule() // Shape: Capsule
+                                    case .rectangle(let cornerRadius):
+                                        RoundedRectangle(cornerRadius: cornerRadius - edgePadding) // Shape: RoundedRectangle with adjusted cornerRadius
+                                    }
+                                }
                                 .foregroundStyle(
                                     LinearGradient(
-                                        gradient: Gradient(colors: [.white.opacity(0), .white.opacity(0.1), .white.opacity(0.3), .white.opacity(1)]),
+                                        gradient: Gradient(colors: [.white.opacity(0.95), .white.opacity(0.2), .white.opacity(0)]),
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
                                 )
-                                .blur(radius: edgePadding / 2) // Soften the gradient edges
-                                .blendMode(.overlay)
+                                .mask(
+                                    Group {
+                                        switch shape {
+                                        case .capsule:
+                                            Capsule()
+                                                .offset(y: -geo.size.height / 2 + edgePadding * 8) // Position reflection for Capsule
+                                                .padding(.vertical, edgePadding * 5)
+                                                .padding(.horizontal, edgePadding * 3)
+                                            
+                                        case .rectangle:
+                                            Ellipse()
+                                                .scaleEffect(x: 1.5)
+                                                .offset(y: -geo.size.height / 2 + edgePadding * 4) // Position reflection for Rectangle
+                                        }
+                                    }
+                                )
                             
-                            ZStack {
-                                // Reflection effect on the capsule
-                                Capsule()
-                                    .foregroundStyle(
-                                        LinearGradient(
-                                            gradient: Gradient(colors: [.white.opacity(0.95), .white.opacity(0.2), .white.opacity(0)]),
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                                    .mask(
-                                        Capsule()
-                                            .offset(y: -geo.size.height / 6) // Adjust the position of the reflection
-                                            .padding(.vertical, edgePadding * 5)
-                                            .padding(.horizontal, edgePadding * 3)
-                                    )
-                                
-                                // Highlight effect applied only if the highlight option is true
+                                // Highlight effect (applied only if highlight is true)
                                 if highlight {
-                                    Capsule()
-                                        .foregroundStyle(.white.opacity(0.8))
-                                        .mask(
-                                            ZStack {
-                                                Capsule() // Full-sized capsule for the base of the highlight
-                                                
-                                                Capsule()
-                                                    .offset(y: edgePadding * 1.2) // Slightly offset capsule to create a cut-out effect
-                                                    .blendMode(.destinationOut) // Removes the overlapping area, creating a highlight
-                                            }
-                                            .compositingGroup() // Creates a shape from the non-overlapping areas of the two capsules.
-                                            .mask(
-                                                // Applies the same mask as the reflection
-                                                Capsule()
-                                                    .offset(y: -geo.size.height / 6) // Align with reflection
-                                                    .padding(.vertical, edgePadding * 5)
-                                                    .padding(.horizontal, edgePadding * 3)
-                                            )
-                                        )
+                                    Group {
+                                        switch shape {
+                                        case .capsule:
+                                            Capsule() // Base highlight shape: Capsule
+                                                .foregroundStyle(.white.opacity(0.8))
+                                                .mask(
+                                                    ZStack {
+                                                        Capsule() // Full-sized highlight shape
+                                                        
+                                                        Capsule()
+                                                            .offset(y: edgePadding * 1.2) // Offset highlight shape to create cut-out effect
+                                                            .blendMode(.destinationOut) // Blend mode for cut-out effect
+                                                        
+                                                    }
+                                                    .compositingGroup() // Combine shapes to create final highlight effect
+                                                    .mask(
+                                                        Capsule()
+                                                            .offset(y: -geo.size.height / 2 + edgePadding * 8) // Position reflection for Capsule
+                                                            .padding(.vertical, edgePadding * 5)
+                                                            .padding(.horizontal, edgePadding * 3)
+                                                    )
+                                                )
+                                            
+                                        case .rectangle(let cornerRadius):
+                                            RoundedRectangle(cornerRadius: cornerRadius - edgePadding) // Base highlight shape: RoundedRectangle
+                                                .foregroundStyle(.white.opacity(0.8))
+                                                .mask(
+                                                    ZStack {
+                                                        RoundedRectangle(cornerRadius: cornerRadius - edgePadding) // Full-sized highlight shape
+                                                        
+                                                        RoundedRectangle(cornerRadius: cornerRadius - edgePadding)
+                                                            .offset(y: edgePadding * 1.2) // Offset highlight shape to create cut-out effect
+                                                            .blendMode(.destinationOut) // Blend mode for cut-out effect
+                                                        
+                                                    }
+                                                    .compositingGroup() // Combine shapes to create final highlight effect
+                                                    .mask(
+                                                        Ellipse()
+                                                            .scaleEffect(x: 1.5)
+                                                            .offset(y: -geo.size.height / 2 + edgePadding * 4) // Align with reflection
+                                                    )
+                                                )
+                                        }
+                                    }
+                                    .blur(radius: edgePadding / 4) // Blur effect for highlight
                                 }
                             }
-                            .blur(radius: edgePadding / 4)
-                            ///.padding(edgePadding)
                         }
                         .padding(edgePadding) // Additional padding for inner ZStack
                     }
@@ -102,8 +157,13 @@ struct AquaButtonStyle: ButtonStyle {
     }
 }
 
+enum ButtonShape{
+    case capsule
+    case rectangle(cornerRadius: CGFloat)
+}
+
 extension View {
-    func aquaButtonStyle(aquaColor: Color, colorShadow: Bool = true) -> some View {
-        self.buttonStyle(AquaButtonStyle(aquaColor: aquaColor, colorShadow: colorShadow))
+    func aquaButtonStyle(aquaColor: Color, colorShadow: Bool = true, shape: ButtonShape = .capsule) -> some View {
+        self.buttonStyle(AquaButtonStyle(aquaColor: aquaColor, colorShadow: colorShadow, shape: shape))
     }
 }
