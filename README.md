@@ -28,10 +28,6 @@ Button("Aqua Rectangle Button") {
 
 This setup demonstrates how to apply the custom button style with either a capsule or rectangle shape.
 
-## Customization Options
-
-You can customize the `AquaButtonStyle` by adjusting the following parameters:
-
 **Color Shadow**: To disable the color shadow, set the `colorShadow` parameter to `false` in the modifier:
 
   ```swift
