@@ -1,7 +1,9 @@
 # AquaButtonStyle
+
+## Description
 A customizable SwiftUI button style featuring an Aqua-inspired design. Easily integrate it into your SwiftUI projects for enhanced button appearance.
 
-### Basic Usage
+## Basic Usage
 
 To use `AquaButtonStyle` in your SwiftUI project, apply it to your buttons like so:
 
@@ -12,7 +14,7 @@ Button("Aqua Button") {
 .aquaButtonStyle(aquaColor: .blue)
 ```
 
-### Customization Options
+## Customization Options
 
 You can customize the `AquaButtonStyle` by adjusting the following parameters:
 
